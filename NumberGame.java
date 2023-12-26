@@ -37,7 +37,7 @@ public class NumberGame
             System.out.print("Enter your guess: ");
             int guess = scanner.nextInt();
             attempts++;
-          if(attempts<11)
+          if(attempts<12)
           {
             if (guess == generatedNumber) 
             {
