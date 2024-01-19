@@ -1,0 +1,79 @@
+import java.util.Arrays;
+import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class QuizApplication {
+    private int score;
+    private int currentQuestion;
+    private final int timeLimit;
+    private final Question[] questions;
+
+    public QuizApplication(Question[] questions, int timeLimit) {
+        this.questions = questions;
+        this.timeLimit = timeLimit;
+        this.score = 0;
+        this.currentQuestion = 0;
+    }
+
+    public void start() {
+        Scanner scanner = new Scanner(System.in);
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    displayQuestion(scanner);
+                } else {
+                    System.out.println("Quiz complete! Your score is: " + score);
+                    timer.cancel();
+                }
+            }
+        };
+        timer.schedule(task, timeLimit * 1000, timeLimit * 1000);
+        displayQuestion(scanner);
+    }
+
+    private void displayQuestion(Scanner scanner) {
+        System.out.println("Question " + (currentQuestion + 1) + ": " + questions[currentQuestion].prompt);
+        for (int i = 0; i < questions[currentQuestion].answers.length; i++) {
+            System.out.println((i + 1) + ") " + questions[currentQuestion].answers[i]);
+        }
+        System.out.print("Enter your answer (1-" + questions[currentQuestion].answers.length + "): ");
+        int answer = scanner.nextInt();
+        checkAnswer(answer - 1);
+    }
+
+    private void checkAnswer(int answer) {
+        if (answer == questions[currentQuestion].correctAnswerIndex) {
+            score++;
+            System.out.println("Correct!");
+        } else {
+            System.out.println("Incorrect. The correct answer is: " + questions[currentQuestion].answers[questions[currentQuestion].correctAnswerIndex]);
+        }
+    }
+
+    public static void main(String[] args) {
+        Question[] questions = {
+                new Question("What is the capital of France?", new String[]{"Paris", "London", "Berlin", "Madrid"}, 0),
+                new Question("What is the largest planet in our solar system?", new String[]{"Jupiter", "Saturn", "Mars", "Earth"}, 0),
+                new Question("What is the smallest country in the world?", new String[]{"Vatican City", "Monaco", "San Marino", "Liechtenstein"}, 0)
+                
+        };
+        QuizApplication quiz = new QuizApplication(questions, 10);
+        quiz.start();
+    }
+
+    private static class Question {
+        private final String prompt;
+        private final String[] answers;
+        private final int correctAnswerIndex;
+
+        public Question(String prompt, String[] answers, int correctAnswerIndex) {
+            this.prompt = prompt;
+            this.answers = answers;
+            this.correctAnswerIndex = correctAnswerIndex;
+        }
+    }
+}
